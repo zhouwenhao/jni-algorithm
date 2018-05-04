@@ -19,3 +19,5 @@ RGB或者ARGB格式转码成像素点   之后由像素点生成bitmap
 
 算法4：  yuvTonv21   将y u v 三组数据拼接成nv21格式
 
+RenderScrpit: GPU加速
+
