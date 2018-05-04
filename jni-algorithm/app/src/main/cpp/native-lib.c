@@ -206,3 +206,72 @@ Java_com_timark_jnialgorithm_NativeImageUtils_argbToNv21(JNIEnv *env, jobject ob
     (*env)->ReleaseByteArrayElements(env, nv21_data, nvaar, 0);
     return nv21_data;
 }
+
+jclass
+findSortClass(JNIEnv *env, const char* path)
+{
+    return (*env)->FindClass(env, path);
+}
+
+void
+copyArray(JNIEnv *env, jmethodID method, jobjectArray *src, jobjectArray *des, jsize len, jboolean isUp)
+{
+    int temp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int ii = 0;
+    for (int i = 0; i < len; ++i) {
+        if (temp[i] == 0)
+        {
+            int tempIndex = i;
+            jobject *dobj = NULL;
+            jobject obj = (*env)->GetObjectArrayElement(env, *src, i);
+            dobj = &obj;
+            int tempId = (*env)->CallIntMethod(env, obj, method, NULL);
+            for (int j = 0; j < len; ++j) {
+                if (i == j || temp[j] != 0)
+                {
+                    continue;
+                }
+                jobject obj = (*env)->GetObjectArrayElement(env, *src, j);
+                int id = (*env)->CallIntMethod(env, obj, method, NULL);
+                if (isUp)  //升序
+                {
+                    if (id < tempId)
+                    {
+                        dobj = &obj;
+                        tempIndex = j;
+                        tempId = id;
+                    }
+                } else
+                {
+                    if (id > tempId)
+                    {
+                        dobj = &obj;
+                        tempIndex = j;
+                        tempId = id;
+                    }
+                }
+            }
+            temp[tempIndex] = 1;
+            (*env)->SetObjectArrayElement(env, *des, ii++, *dobj);
+        }
+    }
+}
+
+//jobject*
+//sort(JNIEnv *env, jmethodID method, jobjectArray *array, jsize len)
+//{
+//
+//}
+
+JNIEXPORT jobjectArray
+JNICALL
+Java_com_timark_jnialgorithm_NativeImageUtils_nativeSort(JNIEnv *env, jobject obj, jobjectArray objarray, jboolean isUp)
+{
+    jsize len = (*env)->GetArrayLength(env, objarray);
+    jclass clz = findSortClass(env, "com/timark/jnialgorithm/INativeSort");
+    jmethodID method = (*env)->GetMethodID(env, clz, "getId", "()I");
+
+    jobjectArray newArray = (*env)->NewObjectArray(env, len, clz, NULL);
+    copyArray(env, method, &objarray, &newArray, len, isUp);
+
+}
