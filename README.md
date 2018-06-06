@@ -21,3 +21,4 @@ RGB或者ARGB格式转码成像素点   之后由像素点生成bitmap
 
 RenderScrpit: GPU加速
 
+YUVImage有内存泄漏：https://blog.csdn.net/q979713444/article/details/80446404
